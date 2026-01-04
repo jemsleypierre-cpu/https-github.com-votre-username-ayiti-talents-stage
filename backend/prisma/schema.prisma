@@ -1,0 +1,142 @@
+// Prisma schema for Order Tracking System
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      UserRole @default(USER)
+  phone     String?
+  avatar    String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  ordersAsCustomer Order[]        @relation("CustomerOrders")
+  ordersAsDriver   Order[]        @relation("DriverOrders")
+  statusUpdates    StatusHistory[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  USER
+  DRIVER
+  ADMIN
+}
+
+model Order {
+  id                String      @id @default(uuid())
+  orderNumber       String      @unique @map("order_number")
+  status            OrderStatus @default(PENDING)
+  totalAmount       Decimal     @map("total_amount") @db.Decimal(10, 2)
+  notes             String?
+  estimatedDelivery DateTime?   @map("estimated_delivery")
+  actualDelivery    DateTime?   @map("actual_delivery")
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
+
+  // Relations
+  customerId String  @map("customer_id")
+  customer   User    @relation("CustomerOrders", fields: [customerId], references: [id])
+  driverId   String? @map("driver_id")
+  driver     User?   @relation("DriverOrders", fields: [driverId], references: [id])
+
+  items           OrderItem[]
+  statusHistory   StatusHistory[]
+  deliveryAddress DeliveryAddress?
+  locations       OrderLocation[]
+
+  @@index([customerId])
+  @@index([driverId])
+  @@index([status])
+  @@map("orders")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  READY
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  productId String  @map("product_id")
+  name      String
+  quantity  Int
+  price     Decimal @db.Decimal(10, 2)
+
+  // Relations
+  orderId String @map("order_id")
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_items")
+}
+
+model DeliveryAddress {
+  id       String  @id @default(uuid())
+  street   String
+  city     String
+  state    String?
+  zipCode  String? @map("zip_code")
+  country  String  @default("Haiti")
+  lat      Float?
+  lng      Float?
+
+  // Relations
+  orderId String @unique @map("order_id")
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("delivery_addresses")
+}
+
+model StatusHistory {
+  id        String      @id @default(uuid())
+  status    OrderStatus
+  note      String?
+  lat       Float?
+  lng       Float?
+  timestamp DateTime    @default(now())
+
+  // Relations
+  orderId     String  @map("order_id")
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  updatedById String? @map("updated_by_id")
+  updatedBy   User?   @relation(fields: [updatedById], references: [id])
+
+  @@index([orderId])
+  @@map("status_history")
+}
+
+model OrderLocation {
+  id        String   @id @default(uuid())
+  lat       Float
+  lng       Float
+  heading   Float?
+  speed     Float?
+  timestamp DateTime @default(now())
+
+  // Relations
+  orderId  String @map("order_id")
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  driverId String @map("driver_id")
+
+  @@index([orderId])
+  @@index([timestamp])
+  @@map("order_locations")
+}
+
