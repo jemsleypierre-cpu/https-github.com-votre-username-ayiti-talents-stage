@@ -21,21 +21,38 @@ const usersStore = new Map<string, User>();
 
 // Seed demo users
 const seedUsers = async () => {
-  const hashedPassword = await bcrypt.hash('password123', 10);
+  const zoePassword = await bcrypt.hash('Zoe2106', 10);
+  const defaultPassword = await bcrypt.hash('password123', 10);
   
   const demoUsers: User[] = [
     {
       id: uuidv4(),
-      email: 'admin@ayiti.com',
-      password: hashedPassword,
-      name: 'Admin User',
+      email: 'Zoe1',
+      password: zoePassword,
+      name: 'Zoe1 Admin',
+      role: 'admin',
+      createdAt: new Date(),
+    },
+    {
+      id: uuidv4(),
+      email: 'Zoe2',
+      password: zoePassword,
+      name: 'Zoe2 Admin',
+      role: 'admin',
+      createdAt: new Date(),
+    },
+    {
+      id: uuidv4(),
+      email: 'Zoe3',
+      password: zoePassword,
+      name: 'Zoe3 Admin',
       role: 'admin',
       createdAt: new Date(),
     },
     {
       id: uuidv4(),
       email: 'driver@ayiti.com',
-      password: hashedPassword,
+      password: defaultPassword,
       name: 'Driver User',
       role: 'driver',
       createdAt: new Date(),
@@ -43,7 +60,7 @@ const seedUsers = async () => {
     {
       id: uuidv4(),
       email: 'user@ayiti.com',
-      password: hashedPassword,
+      password: defaultPassword,
       name: 'Regular User',
       role: 'user',
       createdAt: new Date(),
@@ -213,7 +230,9 @@ router.get('/demo-credentials', (_req: Request, res: Response) => {
     data: {
       message: 'Use these credentials for testing',
       users: [
-        { email: 'admin@ayiti.com', password: 'password123', role: 'admin' },
+        { email: 'Zoe1', password: 'Zoe2106', role: 'admin' },
+        { email: 'Zoe2', password: 'Zoe2106', role: 'admin' },
+        { email: 'Zoe3', password: 'Zoe2106', role: 'admin' },
         { email: 'driver@ayiti.com', password: 'password123', role: 'driver' },
         { email: 'user@ayiti.com', password: 'password123', role: 'user' },
       ],
@@ -222,4 +241,6 @@ router.get('/demo-credentials', (_req: Request, res: Response) => {
 });
 
 export { router as authRoutes };
+
+
 

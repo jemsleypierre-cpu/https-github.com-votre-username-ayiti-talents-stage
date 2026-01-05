@@ -37,15 +37,15 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { ExportButton } from '@/components/ExportButton';
 
-// Liste des 3 administrateurs autorisés (emails)
+// Liste des 3 administrateurs autorisés (usernames)
 const ADMIN_EMAILS = [
-  'jemsleypierre@gmail.com',
-  'admin2@ayititalents.com', 
-  'admin3@ayititalents.com'
+  'zoe1',
+  'zoe2', 
+  'zoe3'
 ];
 
-// Mot de passe admin simple (à changer en production)
-const ADMIN_PASSWORD = 'AyitiAdmin2024!';
+// Mot de passe admin
+const ADMIN_PASSWORD = 'Zoe2106';
 
 interface CandidateApplication {
   id: string;

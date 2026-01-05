@@ -64,3 +64,5 @@ echo "  Admin:  admin@ayiti.com / password123"
 echo "  Driver: driver@ayiti.com / password123"
 echo "  User:   user@ayiti.com / password123"
 
+
+
